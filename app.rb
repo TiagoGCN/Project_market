@@ -12,4 +12,5 @@ printer = Printer.new(market)
 puts printer.paper_printer
 puts "\n"
 puts printer.total_message
+printer.total_discount_message
 puts printer.change_message

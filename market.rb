@@ -1,11 +1,13 @@
 
 class Market
-  attr_accessor :total, :imput, :change, :valor, :impressora, :discount_parameter
+  attr_accessor :total, :imput, :change, :valor, :impressora, :discount_parameter, :impressora_discount
 
   def initialize(data)
     @discount_parameter = []
     @impressora = []
+    @impressora_discount = []
     @total = 0
+    @i_discount = -1
     find_product(data)
   end
 
@@ -27,14 +29,14 @@ class Market
       @total += product.price
       screen_discount_print_message(product, n)
       to_printer_discount(product, n)
-      @total += ( - (product.price - product.discount)*n)
+      # @total += ( - (product.price - product.discount)*n)
     elsif n > 3
       screen_print_message(product)
       to_printer(product)
       @total += product.price
       screen_discount_print_message(product, n)
       to_printer_discount(product, n)
-      @total += (( - (product.price - product.discount)*n) - ( - (product.price - product.discount)*(n-1)))
+      # @total += (( - (product.price - product.discount)*n) - ( - (product.price - product.discount)*(n-1)))
     else
       screen_print_message(product)
       to_printer(product)
@@ -57,8 +59,18 @@ class Market
   end
 
   def to_printer_discount(product, n)
-    @impressora << "        Desconto total: #{product.name} --------------- Valor: R$#{"%.2f" % (-(product.price - product.discount)*n)}"
-  end
+    if @impressora_discount == []
+      puts "deu certo"
+      @impressora_discount << {code: product.code, name: product.name, discount_value: ( - (product.price - product.discount)*n)}
+      puts @impressora_discount
+      @i_discount += 1
+    elsif @impressora_discount[@i_discount][:code] == product.code
+      @impressora_discount[@i_discount][:discount_value] = ( - (product.price - product.discount)*n)
+    else
+      @impressora_discount << {code: product.code, name: product.name, discount_value: ( - (product.price - product.discount)*n)}
+      @i_discount += 1
+    end
+  end 
 
   def screen_discount_print_message(product, n)
     puts "        Desconto total: #{product.name} --------------- Valor: R$#{"%.2f" % (-(product.price - product.discount)*n)}"
@@ -96,4 +108,5 @@ class Market
     change_calculo(total)
   end
 end
+
 

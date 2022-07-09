@@ -11,7 +11,6 @@ class Discount_register
     @product.each do |product|
       if product.code == @code
         product.discount = 14.50
-        # puts "Produto: #{product.name}.............Valor: R$#{'%.2f' % product.discount}"
       end     
     end
   end
