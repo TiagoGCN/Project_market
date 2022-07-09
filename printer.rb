@@ -7,8 +7,8 @@ class Printer
    @data.impressora
   end
 
-  def troco_message
-    "Valor de troco: R$#{"%.2f" % @data.troco}"
+  def change_message
+    "Troco: R$#{"%.2f" % @data.change}"
   end
   
   def total_message
