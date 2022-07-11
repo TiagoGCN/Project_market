@@ -1,6 +1,6 @@
 
 class Market
-  attr_accessor :total, :imput, :change, :valor, :impressora, :discount_parameter, :impressora_discount
+  attr_accessor :total, :imput, :change, :valor, :impressora, :discount_parameter, :impressora_discount, :to_print_product_number
 
   def initialize(data)
     @discount_parameter = []
@@ -8,35 +8,29 @@ class Market
     @impressora_discount = []
     @total = 0
     @i_discount = -1
+    @to_print_product_number = 0
     find_product(data)
   end
 
   def discount_condition(product, imput)
+    @to_print_product_number +=1
     n = 0
     discount_parameter.each do |code|
       if code == @imput.to_i
-        n+=1
+        n +=1
       end
     end
 
-    if  product.discount == product.price
+    if product.discount == product.price
       screen_print_message(product)
       to_printer(product)
       @total += product.price
-    elsif n == 3
-      screen_print_message(product)
-      to_printer(product)
-      @total += product.price
-      screen_discount_print_message(product, n)
-      to_printer_discount(product, n)
-      # @total += ( - (product.price - product.discount)*n)
-    elsif n > 3
+    elsif n >= 3
       screen_print_message(product)
       to_printer(product)
       @total += product.price
       screen_discount_print_message(product, n)
       to_printer_discount(product, n)
-      # @total += (( - (product.price - product.discount)*n) - ( - (product.price - product.discount)*(n-1)))
     else
       screen_print_message(product)
       to_printer(product)
@@ -55,19 +49,17 @@ class Market
   end
 
   def to_printer(product)
-    @impressora << "Produto: #{product.name} --------------- Valor: R$#{"%.2f" %product.price}"
+    @impressora << "#{@to_print_product_number} Produto: #{product.name} --------------- Valor: R$#{"%.2f" %product.price}"
   end
 
   def to_printer_discount(product, n)
     if @impressora_discount == []
-      puts "deu certo"
-      @impressora_discount << {code: product.code, name: product.name, discount_value: ( - (product.price - product.discount)*n)}
-      puts @impressora_discount
+      @impressora_discount << {code: product.code, name: product.name, discount_value: (-(product.price - product.discount)*n)}
       @i_discount += 1
     elsif @impressora_discount[@i_discount][:code] == product.code
       @impressora_discount[@i_discount][:discount_value] = ( - (product.price - product.discount)*n)
     else
-      @impressora_discount << {code: product.code, name: product.name, discount_value: ( - (product.price - product.discount)*n)}
+      @impressora_discount << {code: product.code, name: product.name, discount_value: (-(product.price - product.discount)*n)}
       @i_discount += 1
     end
   end 
@@ -77,7 +69,7 @@ class Market
   end
 
   def screen_print_message(product)
-    puts "Produto: #{product.name} --------------- Valor: R$#{"%.2f" %product.price}"
+    puts "#{@to_print_product_number} Produto: #{product.name} --------------- Valor: R$#{"%.2f" %product.price}"
   end
 
   def over?(imput)

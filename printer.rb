@@ -1,7 +1,7 @@
 
 
 class Printer
-    attr_accessor :data
+    attr_accessor :data, :total_discount
    
   def paper_printer
    @data.impressora
@@ -10,19 +10,25 @@ class Printer
   def change_message
     "Troco: R$#{"%.2f" % @data.change}"
   end
-  
+
   def total_message
-    "Total a pagar:----------------- R$#{"%.2f" % @data.total}"
+    "Valor total---------------R$#{"%.2f" % @data.total}"
+  end
+  
+  def to_pay_total_message
+    "Total a pagar:----------------- R$#{"%.2f" % (@data.total + @total_discount)}"
   end
 
   def total_discount_message
     @data.impressora_discount.each do |discount_product|
-      puts "Desconto Total: #{discount_product[:name]} ---------- R$#{"%.2f" % discount_product[:discount_value]}"
+      puts "Desconto Total: #{discount_product[:name]} ---------- R$#{"%.2f" % ((discount_product[:discount_value])*-1)}"
+      @total_discount += discount_product[:discount_value]
     end
   end
 
   def initialize(data)
     @data = data
+    @total_discount = 0
   end
 end
 
