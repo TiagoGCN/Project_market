@@ -1,12 +1,13 @@
 
 class Market
-  attr_accessor :total, :imput, :change, :valor, :impressora, :discount_parameter, :impressora_discount, :to_print_product_number
+  attr_accessor :total, :imput, :change, :valor, :impressora, :discount_parameter, :impressora_discount, :to_print_product_number, :screen_total
 
   def initialize(data)
     @discount_parameter = []
     @impressora = []
     @impressora_discount = []
     @total = 0
+    @screen_total = 0
     @i_discount = -1
     @to_print_product_number = 0
     find_product(data)
@@ -17,7 +18,7 @@ class Market
     n = 0
     discount_parameter.each do |code|
       if code == @imput.to_i
-        n +=1
+        n += 1
       end
     end
 
@@ -25,16 +26,31 @@ class Market
       screen_print_message(product)
       to_printer(product)
       @total += product.price
-    elsif n >= 3
+      @screen_total += product.price
+      screen_total_message
+    elsif n == 3
       screen_print_message(product)
       to_printer(product)
       @total += product.price
+      @screen_total += product.discount 
+      @screen_total += (-(product.price - product.discount)*(n-1))
       screen_discount_print_message(product, n)
       to_printer_discount(product, n)
+      screen_total_message
+    elsif n > 3
+      screen_print_message(product)
+      to_printer(product)
+      @total += product.price
+      @screen_total += product.discount 
+      screen_discount_print_message(product, n)
+      to_printer_discount(product, n)
+      screen_total_message
     else
       screen_print_message(product)
       to_printer(product)
       @total += product.price
+      @screen_total += product.price
+      screen_total_message
     end
   end 
 
@@ -65,8 +81,15 @@ class Market
   end 
 
   def screen_discount_print_message(product, n)
-    puts "        Desconto total: #{product.name} --------------- Valor: R$#{"%.2f" % (-(product.price - product.discount)*n)}"
+    puts "        Desconto: #{product.name} --------------- Valor: R$#{"%.2f" % (-(product.price - product.discount)*n)}"
   end
+
+  # def screen_final_total_message(screen_total)
+  #   puts "Total = R$#{"%.2f" % @screen_total}"
+  # end
+  # def screen_with_discount_print_message(product)
+  #   puts "#{@to_print_product_number} Produto: #{product.name} --------------- Valor: R$#{"%.2f" %product.discount}"
+  # end
 
   def screen_print_message(product)
     puts "#{@to_print_product_number} Produto: #{product.name} --------------- Valor: R$#{"%.2f" %product.price}"
@@ -77,11 +100,11 @@ class Market
   end
 
   def change_calculo(total)
-      @change = imput_change - total
+      @change = imput_change - screen_total
   end
 
-  def screen_total_message(total)
-    puts "Total = R$#{"%.2f"% @total}"
+  def screen_total_message
+    puts "Total = R$#{"%.2f"% screen_total}"
   end
 
   def find_product(disconto)
@@ -96,7 +119,6 @@ class Market
       end
       break if over?(@imput)
     end 
-    screen_total_message(total)
     change_calculo(total)
   end
 end
