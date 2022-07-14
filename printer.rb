@@ -1,7 +1,7 @@
 
 
 class Printer
-    attr_accessor :market, :total_discount
+  attr_accessor :market, :total_discount
    
   def paper_printer
    @market.impressora
@@ -21,7 +21,7 @@ class Printer
 
   def total_discount_message
     @market.impressora_discount.each do |discount_product|
-      puts "Desconto Total: #{discount_product[:name]} ---------- R$#{"%.2f" % ((discount_product[:discount_value])*1)}"
+      puts "Desconto Total: #{discount_product[:name]} ---------- R$#{"%.2f" % (discount_product[:discount_value])}"
       @total_discount += discount_product[:discount_value]
     end
   end

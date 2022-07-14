@@ -15,40 +15,31 @@ class Market
 
   def discount_condition(product, imput)
     @to_print_product_number +=1
-    n = 0
+    screen_print_message(product)
+    to_printer(product)
+    @total += product.price
+    i = 0
     discount_parameter.each do |code|
       if code == @imput.to_i
-        n += 1
+        i += 1
       end
     end
 
     if product.discount == product.price
-      screen_print_message(product)
-      to_printer(product)
-      @total += product.price
       @screen_total += product.price
       screen_total_message
-    elsif n == 3
-      screen_print_message(product)
-      to_printer(product)
-      @total += product.price
+    elsif i == 3 
       @screen_total += product.discount 
-      @screen_total += (-(product.price - product.discount)*(n-1))
-      screen_discount_print_message(product, n)
-      to_printer_discount(product, n)
+      @screen_total += (-(product.price - product.discount)*(i-1))
+      screen_discount_print_message(product, i)
+      to_printer_discount(product, i)
       screen_total_message
-    elsif n > 3
-      screen_print_message(product)
-      to_printer(product)
-      @total += product.price
+    elsif i > 3
       @screen_total += product.discount 
-      screen_discount_print_message(product, n)
-      to_printer_discount(product, n)
+      screen_discount_print_message(product, i)
+      to_printer_discount(product, i)
       screen_total_message
     else
-      screen_print_message(product)
-      to_printer(product)
-      @total += product.price
       @screen_total += product.price
       screen_total_message
     end
@@ -67,29 +58,34 @@ class Market
   def to_printer(product)
     @impressora << "#{@to_print_product_number} Produto: #{product.name} --------------- Valor: R$#{"%.2f" %product.price}"
   end
+  
+  def parameter_to_printer_discount(product, i)
+    (@i_discount+1).times do |position|
+      puts @i_discount
+      if @impressora_discount[position - 1][:code] == product.code
+        @impressora_discount[position - 1][:discount_value] = (-(product.price - product.discount)*i)
+        return true
+      else
+        next
+      end
+    end
+    return false
+  end
 
-  def to_printer_discount(product, n)
+  def to_printer_discount(product, i)
     if @impressora_discount == []
-      @impressora_discount << {code: product.code, name: product.name, discount_value: (-(product.price - product.discount)*n)}
+      @impressora_discount << {code: product.code, name: product.name, discount_value: (-(product.price - product.discount)*i)}
       @i_discount += 1
-    elsif @impressora_discount[@i_discount][:code] == product.code
-      @impressora_discount[@i_discount][:discount_value] = ( - (product.price - product.discount)*n)
+    elsif parameter_to_printer_discount(product, i)
     else
-      @impressora_discount << {code: product.code, name: product.name, discount_value: (-(product.price - product.discount)*n)}
+      @impressora_discount << {code: product.code, name: product.name, discount_value: (-(product.price - product.discount)*i)}
       @i_discount += 1
     end
   end 
 
-  def screen_discount_print_message(product, n)
-    puts "        Desconto: #{product.name} --------------- Valor: R$#{"%.2f" % (-(product.price - product.discount)*n)}"
+  def screen_discount_print_message(product, i)
+    puts "        Desconto: #{product.name} --------------- Valor: R$#{"%.2f" % (-(product.price - product.discount)*i)}"
   end
-
-  # def screen_final_total_message(screen_total)
-  #   puts "Total = R$#{"%.2f" % @screen_total}"
-  # end
-  # def screen_with_discount_print_message(product)
-  #   puts "#{@to_print_product_number} Produto: #{product.name} --------------- Valor: R$#{"%.2f" %product.discount}"
-  # end
 
   def screen_print_message(product)
     puts "#{@to_print_product_number} Produto: #{product.name} --------------- Valor: R$#{"%.2f" %product.price}"
